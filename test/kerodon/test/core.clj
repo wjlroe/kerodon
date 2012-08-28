@@ -158,7 +158,9 @@
       (press "Login")
       (follow-redirect)
       (has (text? "hi someone")
-           "press sends form fields to action url")))
+           "press sends form fields to action url")
+      (has (missing? [:#go-login])
+           "Signed in user should not see login link")))
 
 (deftest selector-not-found
   (let [state (-> (session app)
@@ -254,6 +256,7 @@
 (deftest test-attrs
   (-> (session app)
       (visit "/login-x2")
+      (has (attr? [:form#1 :label] :for "user"))
       (within [:div]
               (has (attr? [:form] :id "1")))))
 
@@ -288,10 +291,10 @@
 (deftest missing-selector
   (-> (session app)
       (visit "/login")
-      (missing? [:#no-such-element])))
+      (has (missing? [:#no-such-element]))))
 
 (deftest missing-selector-within-scope
   (-> (session app)
       (visit "/login")
       (within [:body]
-              (missing? [:title]))))
+              (has (missing? [:title])))))
